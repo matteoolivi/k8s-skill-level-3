@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pg
+  labels:
+    role: pictures-metadata-db
+    exercise: k8s-skill-lvl-3
+spec:
+  clusterIP: None
+  selector:
+    role: pictures-metadata-db
+    exercise: k8s-skill-lvl-3
+  ports:
+  - port: 5432
+    name: pg

@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rabbitmq
+  labels:
+    role: pictures-queue
+    exercise: k8s-skill-lvl-3
+spec:
+  selector:
+    matchLabels:
+      role: pictures-queue
+      exercise: k8s-skill-lvl-3
+  serviceName: rabbitmq
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        role: pictures-queue
+        exercise: k8s-skill-lvl-3
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:3.8.3-management
+          ports:
+          - name: http
+            protocol: TCP
+            containerPort: 15672
+          - name: amqp
+            protocol: TCP
+            containerPort: 5672
+          volumeMounts:
+          - mountPath: "/var/lib/rabbitmq"
+            name: data
+          env:
+          - name: RABBITMQ_DEFAULT_USER 
+            valueFrom:
+              secretKeyRef:
+                name: rabbitmq-credentials
+                key: RABBITMQ_USER
+          - name: RABBITMQ_DEFAULT_PASS
+            valueFrom:
+              secretKeyRef:
+                name: rabbitmq-credentials
+                key: RABBITMQ_PASSWORD
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        role: pictures-queue
+        exercise: k8s-skill-lvl-3
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: standard
+      resources:
+        requests:
+          storage: 10Gi
+      

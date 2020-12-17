@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -u
+
+psql -h $PGHOST \
+    -U $PGUSER \
+    -p $PGPORT \
+    -d $DB_NAME \
+    -c "CREATE TABLE $IMAGE_TABLE($IMAGE_NAME_COLUMN TEXT PRIMARY KEY NOT NULL, $IMAGE_URL_COLUMN TEXT NOT NULL)"

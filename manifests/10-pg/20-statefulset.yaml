@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pg
+  labels:
+    role: pictures-metadata-db
+    exercise: k8s-skill-lvl-3
+spec:
+  selector:
+    matchLabels:
+      role: pictures-metadata-db
+      exercise: k8s-skill-lvl-3
+  serviceName: pg
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        role: pictures-metadata-db
+        exercise: k8s-skill-lvl-3
+    spec:
+      containers:
+      - name: pg
+        image: postgres:12.2
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: pg-credentials
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pg-credentials
+              key: POSTGRES_PASSWORD
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        ports:
+        - containerPort: 5432
+          name: pg
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        role: pictures-metadata-db
+        exercise: k8s-skill-lvl-3
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: standard
+      resources:
+        requests:
+          storage: 1Gi
